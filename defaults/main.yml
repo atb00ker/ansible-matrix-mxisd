@@ -1,0 +1,10 @@
+---
+# Change these before running ansible playbook
+    reportStats: false # Send anonymus stats report to help improve matrix code, VISIT: matrix.org
+    hostname: vagrant.box # The domain of server where you plan to set homeserver. (Eg: www.MY_AWESOME_WEBSITE.com)
+    email: YOUR.AWESOME_EMAIL.ID # Certbot requires an email ID. (For getting certificates and making a https connection)
+# Change these only if you are sure of what's going on here.
+    path: /root/mxisd
+    urlToDownloadDebFile: https://github.com/kamax-io/mxisd/releases/download/v0.6.1/mxisd_0.6.1_all.deb # Location of file to download mxisd file.
+    matrixConfFileToSend: files/nginx.conf # This is the nginx.conf file that would be send to the server
+    portForRiot: 443 # You'll hit this port on your domain for your homeserver

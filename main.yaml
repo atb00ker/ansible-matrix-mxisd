@@ -1,0 +1,39 @@
+---
+- hosts: all
+  become: yes
+  remote_user: root # If you are a sudoer without access to root, put your username here!
+  handlers:
+    - import_tasks: handlers/main.yml
+  tasks:
+  - include_vars: dir=defaults
+  - name: Make directory for mxisd
+    file:
+      path: "{{ path }}"
+      state: directory
+  - name: Download mxisd deb file
+    get_url:
+      url: "{{ urlToDownloadDebFile }}"
+      dest: "{{ path }}/mxisd.deb"
+  - name: Install mxisd deb package
+    apt:
+      deb: "{{ path }}/mxisd.deb"
+  - name: Configure mxisd
+    lineinfile:
+      path: /etc/mxisd/mxisd-sample.yaml
+      regexp: "{{ item.regexp }}"
+      state: present
+      line: "{{ item.line }}"
+    with_items:
+      -  {regexp: "matrix.domain",line: "matrix.domain: '{{ hostname }}'" }
+    notify:
+      - restart matrix-mxisd
+
+  - import_tasks: tasks/nginx.yml
+
+  - name: Adding trusted_third_party_id_servers
+    lineinfile:
+      insertafter: "trusted_third_party_id_servers"
+      path: /etc/matrix-synapse/homeserver.yaml
+      line: "    - {{ hostname }}"
+    notify:
+      - restart matrix-synapse
